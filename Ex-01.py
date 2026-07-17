@@ -2,6 +2,8 @@
 import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
+print("Gowtham C")
+print("814724243047")
 X = np.array([
     [0, 0],
     [0, 1],
