@@ -13,7 +13,7 @@ import seaborn as sns
 sns.set() 
 fig, ax = plt.subplots(3, 6, figsize=(18, 10)) 
 for i, axi in enumerate(ax.flat): 
-    axi.imshow(faces.images[i] / 255) # Scale pixel values so Matplotlib doesn't clip everything above 1.0 
+    axi.imshow(faces.images[i] / 255)
     axi.set(xticks=[], yticks=[], xlabel=faces.target_names[faces.target[i]])
 from collections import Counter 
 counts = Counter(faces.target)
