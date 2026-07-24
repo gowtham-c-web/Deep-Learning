@@ -3,6 +3,8 @@ import pandas as pd
 from sklearn.datasets import fetch_lfw_people 
 faces = fetch_lfw_people(min_faces_per_person=100, resize=1.0, slice_=(slice(60,188), slice(60, 188)), color=True) 
 class_count = len(faces.target_names) 
+print("Gowtham C")
+print("814724243047")
 print(faces.target_names) 
 print(faces.images.shape) 
 %matplotlib inline 
