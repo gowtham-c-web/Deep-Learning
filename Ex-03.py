@@ -18,9 +18,9 @@ counts = Counter(faces.target)
 names = {} 
 for key in counts.keys(): 
     names[faces.target_names[key]] = counts[key] 
-    df = pd.DataFrame.from_dict(names, orient='index')
-    df.plot(kind='bar') 
-    mask = np.zeros(faces.target.shape, dtype=np.bool) 
+df = pd.DataFrame.from_dict(names, orient='index')
+df.plot(kind='bar') 
+mask = np.zeros(faces.target.shape, dtype=np.bool) 
 for target in np.unique(faces.target): 
     mask[np.where(faces.target == target)[0][:100]] = 1 
     x_faces = faces.data[mask] 
@@ -75,4 +75,4 @@ x = image.img_to_array(x) / 255
 x = np.expand_dims(x, axis=0)
 y = model.predict(x)[0] 
 for i in range(len(y)): 
-    print(faces.target_names[i] + ': ' + str(y[i])) 
+    print(faces.target_names[i] + ': ' + str(y[i]))
