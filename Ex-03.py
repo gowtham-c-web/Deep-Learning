@@ -55,7 +55,7 @@ val_acc = hist.history['val_accuracy']
 epochs = range(1, len(acc) + 1) 
 plt.plot(epochs, acc, '-', label='Training Accuracy') 
 plt.plot(epochs, val_acc, ':', label='Validation Accuracy') 
-plt.title('Training and Validation’) 
+plt.title('Training and Validation') 
 plt.xlabel('Epoch') 
 plt.ylabel('Accuracy') 
 plt.legend(loc='lower right')
