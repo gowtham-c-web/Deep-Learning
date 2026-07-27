@@ -69,7 +69,7 @@ plt.xlabel('Predicted label')
 plt.ylabel('Actual label') 
 plt.show()
 from keras.preprocessing import image 
-x = image.load_img('george.jpg', target_size=(face_images.shape[1], face_images.shape[2]))
+x = image.load_img('George.jpg', target_size=(face_images.shape[1], face_images.shape[2]))
 plt.figure()
 plt.xticks([]) 
 plt.yticks([]) 
