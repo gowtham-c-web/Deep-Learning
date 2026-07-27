@@ -1,53 +1,53 @@
-import numpy as np 
+import numpy as np
 import pandas as pd 
 from sklearn.datasets import fetch_lfw_people 
-faces = fetch_lfw_people(min_faces_per_person=100, resize=1.0, slice_=(slice(60,188), slice(60, 188)), color=True) 
-class_count = len(faces.target_names) 
-print("Gowtham C")
-print("814724243047")
-print(faces.target_names) 
-print(faces.images.shape)
-import matplotlib.pyplot as plt 
+from collections import Counter 
+import matplotlib.pyplot as plt
 import seaborn as sns 
-sns.set() 
-fig, ax = plt.subplots(3, 6, figsize=(18, 10)) 
+from tensorflow.keras.utils import to_categorical 
+from sklearn.model_selection import train_test_split 
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten
+from sklearn.metrics import confusion_matrix 
+from tensorflow.keras.preprocessing import image
+faces = fetch_lfw_people(min_faces_per_person=100, resize=1.0, slice_=(slice(60, 188), slice(60, 188)), color=True) 
+class_count = len(faces.target_names) 
+print("Target Names:", faces.target_names) 
+print("Images Shape:", faces.images.shape) 
+%matplotlib inline 
+sns.set_theme() 
+fig, ax = plt.subplots(3, 6, figsize=(18, 10))
 for i, axi in enumerate(ax.flat): 
-    axi.imshow(faces.images[i] / 255)
+    axi.imshow(faces.images[i] / 255.0) 
     axi.set(xticks=[], yticks=[], xlabel=faces.target_names[faces.target[i]])
 plt.show()
-from collections import Counter 
 counts = Counter(faces.target)
-names = {} 
-for key in counts.keys(): 
-    names[faces.target_names[key]] = counts[key] 
+names = {faces.target_names[key]: counts[key] for key in counts.keys()} 
 df = pd.DataFrame.from_dict(names, orient='index')
 df.plot(kind='bar') 
 plt.show()
 mask = np.zeros(faces.target.shape, dtype=bool) 
 for target in np.unique(faces.target): 
-    mask[np.where(faces.target == target)[0][:100]] = 1 
+    mask[np.where(faces.target == target)[0][:100]] = True 
 x_faces = faces.data[mask] 
 y_faces = faces.target[mask] 
 x_faces = np.reshape(x_faces, (x_faces.shape[0], faces.images.shape[1], faces.images.shape[2], faces.images.shape[3])) 
-from tensorflow.keras.utils import to_categorical 
-from sklearn.model_selection import train_test_split 
-face_images = x_faces / 255 # Normalize pixel values
+face_images = x_faces / 255.0 
 face_labels = to_categorical(y_faces) 
 x_train, x_test, y_train, y_test = train_test_split(face_images, face_labels, train_size=0.8, stratify=face_labels, random_state=0) 
-from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten 
-from keras.models import Sequential
-model = Sequential() 
-model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(face_images.shape[1:]))) 
-model.add(MaxPooling2D(2, 2)) 
-model.add(Conv2D(64, (3, 3), activation='relu')) 
-model.add(MaxPooling2D(2, 2)) 
-model.add(Conv2D(64, (3, 3), activation='relu')) 
-model.add(MaxPooling2D(2, 2)) 
-model.add(Flatten()) 
-model.add(Dense(128, activation='relu')) 
-model.add(Dense(class_count, activation='softmax')) 
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu', input_shape=face_images.shape[1:]),
+    MaxPooling2D(2, 2),
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D(2, 2),
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D(2, 2),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dense(class_count, activation='softmax')
+])
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy']) 
-model.summary()
+model.summary() 
 hist = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=20, batch_size=25) 
 acc = hist.history['accuracy'] 
 val_acc = hist.history['val_accuracy'] 
@@ -59,24 +59,25 @@ plt.title('Training and Validation')
 plt.xlabel('Epoch') 
 plt.ylabel('Accuracy') 
 plt.legend(loc='lower right')
-plt.show()
-from sklearn.metrics import confusion_matrix 
+plt.show() 
 y_predicted = model.predict(x_test) 
 mat = confusion_matrix(y_test.argmax(axis=1), y_predicted.argmax(axis=1)) 
 plt.figure(figsize=(10, 8))
-sns.heatmap(mat.T, square=True, annot=True, fmt='d', cbar=False, cmap='Blues', xticklabels=faces.target_names, yticklabels=faces.target_names) 
-plt.xlabel('Predicted label')
-plt.ylabel('Actual label') 
+sns.heatmap(mat.T, square=True, annot=True, fmt='d', cbar=False, cmap='Blues', 
+            xticklabels=faces.target_names, yticklabels=faces.target_names) 
+plt.xlabel('Actual label')
+plt.ylabel('Predicted label') 
 plt.show()
-from keras.preprocessing import image 
-x = image.load_img('George.jpg', target_size=(face_images.shape[1], face_images.shape[2]))
+target_img_size = (face_images.shape[1], face_images.shape[2])
+x = image.load_img('george.jpg', target_size=target_img_size)
 plt.figure()
 plt.xticks([]) 
 plt.yticks([]) 
 plt.imshow(x) 
 plt.show()
-x = image.img_to_array(x) / 255
+x = image.img_to_array(x) / 255.0
 x = np.expand_dims(x, axis=0) 
 y = model.predict(x)[0] 
+print("\n--- Predictions ---")
 for i in range(len(y)): 
-    print(faces.target_names[i] + ': ' + str(y[i]))
+    print(f"{faces.target_names[i]}: {y[i]:.4f}")
