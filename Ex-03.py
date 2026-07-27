@@ -59,7 +59,7 @@ plt.title('Training and Validation')
 plt.xlabel('Epoch') 
 plt.ylabel('Accuracy') 
 plt.legend(loc='lower right')
-plt.show() # <-- Added to display accuracy curves
+plt.show()
 from sklearn.metrics import confusion_matrix 
 y_predicted = model.predict(x_test) 
 mat = confusion_matrix(y_test.argmax(axis=1), y_predicted.argmax(axis=1)) 
